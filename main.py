@@ -1,4 +1,3 @@
-
 def main() -> None:
     print("-----------------------")
     print("|                     |")
@@ -10,21 +9,27 @@ def main() -> None:
     print("Command List:")
     print("\'play\': Play a Round")
     print("\'skill\': Change your skill")
-    print("\'help\': Show how to play")
+    print("\'help\': Displays the GoForX manual")
     print("\'quit\': Quit the Game")
     
-    player_response = input()
+    player_response = input().lower()
     match player_response:
         case "play":
             pass
+
         case "skill":
             pass
+
         case "help":
-            print("sum")
+            f = open("goforx.help", "r")
+            print(f.read())
+            f.close()
+        
         case "quit":
             quit()
-
-
+        
+        case _:
+            print(f"Unknown Command \'{player_response}\'")
 
 
 if __name__ == "__main__":

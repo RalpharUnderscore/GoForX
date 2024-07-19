@@ -1,0 +1,87 @@
+GoForX Manual v0.1
+
+GoForX by Ralphar
+Itch.io: https://ralphar.itch.io/
+
+GoForX is a text-based strategy game that takes a different spin on the classic 
+casino game Blackjack, also known as 21. GoForX aims to be strategic 
+while still being simple and exciting.
+
+----------------------------
+
+Part I: Basics of Blackjack
+Part II: The Bound
+Part III: The Deck
+Part IV: Skills
+
+---------------------------
+
+Part I: Basics of Blackjack
+In blackjack, the object of the game is to draw cards and end the game with a 
+hand value that is higher than your opponent, without going over 21.
+Players take turn drawing cards (Hit) and if they are satisfied with their
+hand, they may choose to stop drawing (Stand)
+J, Q and K counts as 10
+A counts as either 1 or 11, depending on which is more advantageous
+
+Example:
+You: 3, 7, 9, 1
+Opponent: J, 4, 2
+
+You Win. 20 > 16
+(You: 3+7+9+1=20)
+(Opponent: 10+4+2=16) 
+
+
+You: J, Q, 4
+Opponent: 2, 9, 8
+
+You Lose. Your Hand exceeds 21.
+(You: 10+10+4=24)
+(Opponent: 2+9+8=19)
+
+
+---------------------------
+
+
+Part II: The Bound
+In GoForX, the number you do not want to exceed is referred to as the "Bound". 
+In Blackjack this number is always 21 but in GoForX this number is different every game.
+
+
+2.1) Both players will have different bounds. The winner of GoForX is the player whose hand value has
+the shortest distance to their bound.
+
+Example:
+Your Hand: 22  Bound: 24
+Your Opponent: 23  Bound: 28
+
+You Win! 1 < 5
+(You: 24-21=1)
+(Opponent: 28-23=5)
+
+
+2.2) Players know their opponent's bound but not theirs. Both players' bounds have
+a maximum difference of 3 (referred to as "Variance"). For example, if your opponent's
+bound is 24, your bound could be anywhere from 21 to 27.
+
+
+---------------------------
+
+
+Part III: The Deck
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
