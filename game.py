@@ -56,5 +56,6 @@ def print_display() -> None:
     print("|                                   |")
     print("|                                   |")
     print("------------------------------------")
+    print("Hello")
 
     
