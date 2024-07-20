@@ -61,8 +61,12 @@ Part II: The Bound
 
 
 2.2) Players know their opponent's bound but not theirs. Both players' bounds have
-    a maximum difference of 2 (referred to as "Variance"). For example, if your opponent's
-    bound is 24, your bound could be anywhere from 22 to 26.
+    a maximum difference of 3 (referred to as "Variance"). They are told if their
+    bound is higher or lower than their opponent. If both players bounds are equal,
+    they are randomly shown either "Higher" or "Lower"
+    
+    For example, if your opponent's bound is 24 and the game tells you your bound is higher
+    your bound could be anywhere from 24 to 27.
 
 
 ---------------------------
