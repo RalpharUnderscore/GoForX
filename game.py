@@ -196,10 +196,11 @@ def hit(is_you: bool, sneak: bool = False) -> None:
     if is_you:
         your_hand.append(hit_card)
     else:
-        print("Opponent Hits!")
         opps_hand.append(hit_card)
     
-    if not sneak: shown_on_display.append(hit_card)
+    if not sneak:
+        if not is_you: print("Opponent Hits!")
+        shown_on_display.append(hit_card)
 
 
 def stand(is_you: bool) -> None:
