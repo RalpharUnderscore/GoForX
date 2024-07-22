@@ -18,7 +18,14 @@ def main() -> None:
             f = open("goforx.help", "r")
             print(f.read())
             f.close()
+
+        case "manual":
+            f = open("goforx.manual", "r")
+            print(f.read())
+            f.close()
         
+
+
         case "quit":
             quit()
         
@@ -37,7 +44,8 @@ def display_title() -> None:
     print("Command List:")
     print("\'play\': Play a Round")
     print("\'skill\': Change your skill")
-    print("\'help\': Displays the GoForX manual")
+    print("\'help\': Displays the GoForX how-to-play")
+    print("\'manual\': Displays the long-winded GoForX manual")
     print("\'quit\': Quit the Game")
 
 

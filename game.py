@@ -2,13 +2,14 @@ if __name__ == "__main__":
     input("Please run main.py to play the game\n")
     quit()
 
-import random as Random
+import random
+import time
 
 # GameID (for events random from the beginning)
 game_id: int = 0
 
 # Deck list
-VARIANCE: int = 3
+variance: int = 3
 decklist: list = []
 duplicate: int
 
@@ -38,6 +39,7 @@ def init_game() -> None:
     global shown_on_display
 
     global duplicate
+    global variance
 
     global your_hand
     global opps_hand
@@ -45,12 +47,12 @@ def init_game() -> None:
     global your_bound
     global opps_bound
 
-    game_id = Random.randint(0, 4294967295)
+    game_id = random.randint(1, 1000)
 
 
     # Setup Decklist and duplicate
     decklist = [x for x in range(2, 13)]
-    duplicate = Random.choice(decklist)
+    duplicate = random.choice(decklist)
     decklist.append(duplicate)
     decklist.sort()
 
@@ -63,27 +65,32 @@ def init_game() -> None:
     your_hand = []
     opps_hand = []
 
+    # Variance
+    variance = random.randint(2, 5)
+
 
     # Set Bound
-    your_bound = Random.randint(18, 34)
-    opps_bound = your_bound + Random.randint(-VARIANCE, VARIANCE)
+    your_bound = random.randint(20, 30)
+    opps_bound = your_bound + random.randint(-variance, variance)
 
     hit(True)
     hit(False, True)
 
 
-    # Gameloop, if your_turn returns false (game ended), break
+    # Gameloop, if turn returns false (game ended), break
     while True:
-        if not your_turn(): break
+        if not turn(): break
     
     # Calculate results
     calculate_results()
 
 
-def your_turn() -> bool:
+def turn() -> bool:
     global your_hand_value
     global opps_hand_value
     
+
+    # Player's Turn
     your_hand_value = 0
     for i in your_hand:
         your_hand_value += i
@@ -94,25 +101,41 @@ def your_turn() -> bool:
 
     print_display()
 
+    player_stand: bool = False
     player_input = input(">").lower()
     match player_input:
         case "hit":
-            hit(True)
-            opps_decide()
-        
+            print("\n==========================\n")
+            print(f"You drew {hit(True)}!")
+            print("\n==========================\n")
+
         case "stand":
-            if not opps_decide(): return False
+            player_stand = True
+            print("")
+        case "quit":
+            quit()
         case "bound":
             print(your_bound)
         case _:
             print(f"Unknown command: \'{player_input}\'")
-    return True
+            return True # 
+    
+    # Opps Turn
+    print("Waiting for Opponent...")
+
+    # Opponent decides, returns false if opponent stands.
+    # If both opponent and player stands, this func returns false and ends the game.
+    if not opps_decide() and player_stand: return False 
+    else: return True
+
 
 
 def opps_decide() -> bool: # Returns true if opps hits
     if len(decklist) == 0:
         stand(False)
         return False
+
+    time.sleep(random.uniform(0.6, 3))
 
     # Get the sum of cards in the deck
     total_deck_value: int = 0
@@ -151,13 +174,16 @@ def print_display() -> None:
                 display[position + 1] = item
 
         else:
-            raise(Exception(f"cannot find {item} in decklist"))
+            raise(Exception(f"cannot find {item} (which comes from shown_on_display) in decklist"))
     print(display)
 
 
 
 
-    print(f"Cards in Deck: {len(in_deck)} Variance: {VARIANCE}")
+
+
+    # print(f"Cards in Deck: {len(in_deck)} variance: {variance}")
+    print(f"Variance: {variance}")
     print(show_if_bound_higher())
 
     print(f"{your_hand_value}   /?? | Your Hand      : {your_hand}")
@@ -166,6 +192,8 @@ def print_display() -> None:
     display_opps_hand = ["??"] + opps_hand[1:len(opps_hand)]
     # print(["??"].extend(opps_hand[0:len(opps_hand)-1]))
     print(f"{opps_hand_value - opps_hand[0]}+??/{opps_bound} | Opponent's Hand: {display_opps_hand}")
+    
+    print("Command: \'hit\', \'stand\', \'skill\'")
 
 
 def show_if_bound_higher() -> str:
@@ -188,11 +216,12 @@ def show_if_bound_higher() -> str:
 # Hit a player,
 # If is_you is true, hits the player, otherwise hits opponent
 # If sneak is true, the number will not be added to shown_on_display (used for opps first card, which is not visible)
-def hit(is_you: bool, sneak: bool = False) -> None:
+# Returns the card drawn
+def hit(is_you: bool, sneak: bool = False) -> int:
     if len(in_deck) == 0: 
         print("No more cards left in the deck.")
         return
-    hit_card = in_deck.pop(Random.randint(0, len(in_deck) - 1))
+    hit_card = in_deck.pop(random.randint(0, len(in_deck) - 1))
     if is_you:
         your_hand.append(hit_card)
     else:
@@ -201,6 +230,8 @@ def hit(is_you: bool, sneak: bool = False) -> None:
     if not sneak:
         if not is_you: print("Opponent Hits!")
         shown_on_display.append(hit_card)
+    
+    return hit_card
 
 
 def stand(is_you: bool) -> None:
@@ -217,10 +248,17 @@ def calculate_results() -> None:
 
     print("\n==========================\n")
 
+    print(f"Duplicate Card: {duplicate}")
+    print(f"Opponent's Hidden Card: {opps_hand[0]}")
+
+    print("\n")
+
+    print(f"Your Hand: {your_hand}")
     print(f"Your Hand Value: {your_hand_value}")
     print(f"Your Bound: {your_bound}")
     print(f"Your Distance: {your_distance}")
     print("\n")
+    print(f"Opponent's Hand: {opps_hand}")
     print(f"Opponent's Hand Value: {opps_hand_value}")
     print(f"Opponent's Bound: {opps_bound}")
     print(f"Opponent's Distance: {opps_distance}")
