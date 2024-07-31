@@ -1,0 +1,35 @@
+GoForX Skill List:
+
+ID: Skillname
+Skill Description.
+
+0: Rack
+Discards the top card of the deck.
+
+1: Return
+Returns your last drawn card into deck.
+
+2: Spin
+Returns your opponent's last drawn card into the deck.
+
+3: Clone
+Clone your last drawn card.
+
+4: Lucky Draw
+Draw the duplicate if it is in the deck, otherwise draw the top card of the deck.
+
+5. Minus Two
+Draw a "-2" card from the void.
+
+6. Flip
+Changes your bound to being opposite of what it was previously (higher/lower). The distance between both player's bounds remain the same.
+
+
+
+7. Up Two
+Increase both player's bounds by 2
+
+8. Down Two
+Decrease both player's bounds by 2
+
+

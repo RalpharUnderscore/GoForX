@@ -50,7 +50,15 @@ def display_title() -> None:
 
 
 def change_skill() -> None:
-    id = int(input("Change skill to: "))
+    f = open("goforx.sklist", "r")
+    print(f.read())
+    f.close()
+
+
+    id = int(input("Change skill to (ID): "))
+    match id:
+        case 0:
+            pass
     f = open("savefile.txt", "w")
     print(f.write(str(id)))
     f.close()

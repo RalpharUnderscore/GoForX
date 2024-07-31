@@ -1,4 +1,4 @@
-GoForX Manual v0.1
+GoForX Help
 
 GoForX by Ralphar
 Itch.io: https://ralphar.itch.io/
@@ -25,8 +25,11 @@ GoForX is similar to Blackjack with a couple of changes.
 
 
 4. You cannot see your opponent's first card
+	and neither can they see yours.
 
-
-5. GoForX has skills
-    You may use your skill by typing "skill" during a game.
-    To change your skill, type "skill" in the main menu.
+5. You must call the duplicate to use your skill
+    GoForX has multiple skills to choose from, however you can only carry 1 to a game.
+	To use your skill, type "skill" during a game, you will be asked to name the duplicate card.
+	If you guess correctly, you get to use your skill.
+	If not, you pass your turn.
+	You can only type "skill" once per game regardless of if you guessed correctly.

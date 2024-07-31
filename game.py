@@ -65,16 +65,19 @@ def init_game() -> None:
     your_hand = []
     opps_hand = []
 
-    # Variance
-    variance = random.randint(2, 5)
+    # Variance, maybe don't randomize
+    # variance = random.randint(2, 5)
 
 
     # Set Bound
     your_bound = random.randint(20, 30)
     opps_bound = your_bound + random.randint(-variance, variance)
 
-    hit(True)
-    hit(False, True)
+    hit(True, False, False)
+    hit(False, True, False)
+
+    hit(True, False, False)
+    hit(False, False, False)
 
 
     # Gameloop, if turn returns false (game ended), break
@@ -142,11 +145,12 @@ def opps_decide() -> bool: # Returns true if opps hits
     for item in in_deck:
         total_deck_value += item
     
-    # Subtract first card in your hand from the data since the AI doesn't know it
-    total_deck_value -= your_hand[0]
-    average_deck_value: float = total_deck_value/(len(in_deck) - 1)
+    # // Subtract first card in your hand from the data since the AI doesn't know it
+    # Add your first card, because the AI has to assume your card is in the deck.
+    total_deck_value += your_hand[0]
+    average_deck_value: float = total_deck_value/(len(in_deck) + 1)
 
-    # If the average deck value is less than distance, draw a card
+    # If the average deck value is less than distance, hit
     # Use the player's bound because AI doesn't know its bound. It also does not care
     # if its bound is higher or lower
     if average_deck_value < your_bound - opps_hand_value: 
@@ -164,14 +168,41 @@ def print_display() -> None:
     print("\n==========================\n")
     display: list = ["_" for i in range(12)]
     
+    # for item in shown_on_display:
+    #     if item in decklist: # Create a list with "_", replaced the _ with the number at the same position as it was sorted in decklists
+    #         if not (item == duplicate and item in display):
+    #             position = decklist.index(item)
+    #             display[position] = item
+    #         else: # If it is a duplicate and duplicate is already in, move the pointer by 1 (.index always finds the first copy)
+    #             position = decklist.index(item)
+    #             display[position + 1] = item
+
     for item in shown_on_display:
-        if item in decklist: # Create a list with "_", replaced the _ with the number at the same position as it was sorted in decklists
-            if not (item == duplicate and item in display):
+        # Create a list with "_", replaced the _ with the number at the same position as it was sorted in decklists
+        if item in decklist: 
+            # If item is not a duplicate add it normally
+            if item != duplicate:
                 position = decklist.index(item)
                 display[position] = item
-            else: # If it is a duplicate and duplicate is already in, move the pointer by 1 (.index always finds the first copy)
-                position = decklist.index(item)
-                display[position + 1] = item
+            
+            # If item IS a duplicate but its copy is not revealed
+            elif item not in display: 
+                if game_id > 500:
+                    position = decklist.index(item)
+                    display[position + 1] = item
+                else:
+                    position = decklist.index(item)
+                    display[position] = item
+
+            # If it IS a duplicate and its copy IS revealed, place it in the location opposite of where the copy is revealed
+            else: 
+                if game_id > 500:
+                    position = decklist.index(item)
+                    display[position] = item
+                else:
+                    position = decklist.index(item)
+                    display[position + 1] = item
+        
 
         else:
             raise(Exception(f"cannot find {item} (which comes from shown_on_display) in decklist"))
@@ -185,6 +216,7 @@ def print_display() -> None:
     # print(f"Cards in Deck: {len(in_deck)} variance: {variance}")
     print(f"Variance: {variance}")
     print(show_if_bound_higher())
+    print()
 
     print(f"{your_hand_value}   /?? | Your Hand      : {your_hand}")
 
@@ -193,6 +225,7 @@ def print_display() -> None:
     # print(["??"].extend(opps_hand[0:len(opps_hand)-1]))
     print(f"{opps_hand_value - opps_hand[0]}+??/{opps_bound} | Opponent's Hand: {display_opps_hand}")
     
+    print()
     print("Command: \'hit\', \'stand\', \'skill\'")
 
 
@@ -217,20 +250,26 @@ def show_if_bound_higher() -> str:
 # If is_you is true, hits the player, otherwise hits opponent
 # If sneak is true, the number will not be added to shown_on_display (used for opps first card, which is not visible)
 # Returns the card drawn
-def hit(is_you: bool, sneak: bool = False) -> int:
+def hit(is_you: bool, sneak: bool = False, display_message: bool = True) -> int:
     if len(in_deck) == 0: 
         print("No more cards left in the deck.")
         return
     hit_card = in_deck.pop(random.randint(0, len(in_deck) - 1))
     if is_you:
         your_hand.append(hit_card)
+        
+        if display_message: 
+            print("Giving you a card...")
+            time.sleep(1)
     else:
         opps_hand.append(hit_card)
+        if display_message: print("Opponent Hits!")
     
     if not sneak:
-        if not is_you: print("Opponent Hits!")
         shown_on_display.append(hit_card)
     
+
+
     return hit_card
 
 
