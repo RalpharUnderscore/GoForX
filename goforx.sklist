@@ -19,17 +19,17 @@ Clone your last drawn card.
 Draw the duplicate if it is in the deck, otherwise draw the top card of the deck.
 
 5. Minus Two
-Draw a "-2" card from the void.
+Draw a "-2" card.
 
-6. Flip
-Changes your bound to being opposite of what it was previously (higher/lower). The distance between both player's bounds remain the same.
-
-
+6. Clamp
+Reduce Variance by 1. May change your bound to fit with the updated variance.
 
 7. Up Two
-Increase both player's bounds by 2
+Increase both player's bounds by 2.
 
-8. Down Two
-Decrease both player's bounds by 2
+8. Savant
+Reveals your Bound, you may only draw 1 other card.
 
+9. Desperado
+Force your opponent to draw a card, you may not draw anymore cards.
 
