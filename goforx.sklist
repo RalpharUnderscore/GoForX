@@ -4,10 +4,10 @@ ID: Skillname
 Skill Description.
 
 0: Rack
-Discards the top card of the deck.
+Discards the top 2 cards of the deck.
 
 1: Return
-Returns your last drawn card into deck.
+Returns your last drawn card into the deck.
 
 2: Spin
 Returns your opponent's last drawn card into the deck.
@@ -21,15 +21,15 @@ Draw the duplicate if it is in the deck, otherwise draw the top card of the deck
 5. Minus Two
 Draw a "-2" card.
 
-6. Clamp
-Reduce Variance by 1. May change your bound to fit with the updated variance.
+6. Bounty
+Removes the highest value card of both players' hand (excluding the first card)
 
 7. Up Two
 Increase both player's bounds by 2.
 
 8. Savant
-Reveals your Bound, you may only draw 1 other card.
+Reveals your bound, you may only draw 1 other card.
 
 9. Desperado
-Force your opponent to draw a card, you may not draw anymore cards.
+Force your opponent to draw the lowest card in the deck, you may not draw anymore cards.
 

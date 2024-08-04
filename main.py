@@ -3,7 +3,7 @@ import game as Game
 
 skill_id: int = 0
 sklist: dict = {
-    0: "RACK",
+    0: "RACK II",
     1: "RETURN",
     2: "SPIN",
     3: "CLONE",
@@ -23,7 +23,8 @@ def main() -> None:
     player_response = input(">").lower()
     match player_response:
         case "play":
-            Game.init_game()
+            print(skill_id)
+            Game.init_game(skill_id)
 
         case "skill":
             change_skill()
@@ -37,7 +38,7 @@ def main() -> None:
             f = open("goforx.manual", "r")
             print(f.read())
             f.close()
-        
+
         case "quit":
             quit()
         
@@ -46,16 +47,17 @@ def main() -> None:
 
 
 def display_title() -> None:
+    global skill_id
     print("-----------------------")
     print("|                     |")
     print("| Let's play GoForX!! |")
     print("|                     |")
     print("-----------------------")
     savefile = open("savefile.txt", "r")
-    id = savefile.read()
+    skill_id = make_sklist_is_valid(savefile)
     
-    make_sklist_is_valid(savefile)
-    print(f"Current skill: {sklist[int(id)]}")
+
+    print(f"Current skill: {sklist[skill_id]}")
     print("Command List:")
     print("\'play\': Play a Round")
     print("\'skill\': Change your skill")
@@ -64,12 +66,26 @@ def display_title() -> None:
     print("\'quit\': Quit the Game")
 
 
-def make_sklist_is_valid(savefile):
+def make_sklist_is_valid(savefile) -> int:
     text = savefile.read()
-    if text not in sklist:
+    flag = False
+    try:
+        if int(text) not in sklist:
+            flag = True
+    except:
+        flag = True
+    
+    if flag:
+        # New variable to rewrite
+        print("Invalid save data. Restored to default...")
         savefile2 = open("savefile.txt", "w")
         savefile2.write("0")
         savefile2.close()
+        return 0
+
+    return int(text)
+    
+        
 
 
 def change_skill() -> None:

@@ -5,6 +5,10 @@ if __name__ == "__main__":
 import random
 import time
 
+# Skill ID
+skill_id: int = 0
+used_skill: bool
+
 # GameID (for events random from the beginning)
 game_id: int = 0
 
@@ -32,7 +36,10 @@ opps_bound: int = 24
 
 
 
-def init_game() -> None:
+def init_game(_skill_id: int) -> None:
+    global skill_id
+    global used_skill
+
     global game_id
     global decklist
     global in_deck
@@ -48,6 +55,10 @@ def init_game() -> None:
     global opps_bound
 
     game_id = random.randint(1, 1000)
+
+    # Set Skill ID
+    skill_id = _skill_id
+    used_skill = False
 
 
     # Setup Decklist and duplicate
@@ -70,7 +81,7 @@ def init_game() -> None:
 
 
     # Set Bound
-    your_bound = random.randint(20, 30)
+    your_bound = random.randint(26, 35)
     opps_bound = your_bound + random.randint(-variance, variance)
 
     hit(True, False, False)
@@ -92,6 +103,7 @@ def turn() -> bool:
     global your_hand_value
     global opps_hand_value
     
+    global used_skill
 
     # Player's Turn
     your_hand_value = 0
@@ -117,11 +129,22 @@ def turn() -> bool:
             print("")
         case "quit":
             quit()
-        case "bound":
-            print(your_bound)
+        case "skill":
+            if used_skill:
+                print("You've already used your skill.")
+                return True # Don't go to opps turn
+            else:
+                used_skill = True
+                guess_duplicate()
+
+        
+        case "dupe":
+            print(duplicate)
+            return True
+
         case _:
             print(f"Unknown command: \'{player_input}\'")
-            return True # 
+            return True # Don't go to opps turn
     
     # Opps Turn
     print("Waiting for Opponent...")
@@ -187,21 +210,21 @@ def print_display() -> None:
             
             # If item IS a duplicate but its copy is not revealed
             elif item not in display: 
-                if game_id > 500:
-                    position = decklist.index(item)
-                    display[position + 1] = item
-                else:
-                    position = decklist.index(item)
-                    display[position] = item
+            #     if game_id > 500:
+            #         position = decklist.index(item)
+            #         display[position + 1] = item
+                # else:
+                position = decklist.index(item)
+                display[position] = item
 
             # If it IS a duplicate and its copy IS revealed, place it in the location opposite of where the copy is revealed
             else: 
-                if game_id > 500:
-                    position = decklist.index(item)
-                    display[position] = item
-                else:
-                    position = decklist.index(item)
-                    display[position + 1] = item
+                # if game_id > 500:
+                #     position = decklist.index(item)
+                #     display[position] = item
+                # else:
+                position = decklist.index(item)
+                display[position + 1] = item
         
 
         else:
@@ -226,7 +249,11 @@ def print_display() -> None:
     print(f"{opps_hand_value - opps_hand[0]}+??/{opps_bound} | Opponent's Hand: {display_opps_hand}")
     
     print()
-    print("Command: \'hit\', \'stand\', \'skill\'")
+    command_list = "Command: \'hit\', \'stand\'"
+    if not used_skill:
+        command_list += ", \'skill\'"
+
+    print(command_list)
 
 
 def show_if_bound_higher() -> str:
@@ -276,6 +303,113 @@ def hit(is_you: bool, sneak: bool = False, display_message: bool = True) -> int:
 def stand(is_you: bool) -> None:
     if not is_you:
         print("Opponent Stands!")
+
+
+
+def guess_duplicate():
+    while True:
+        call = input("The duplicate card is: ")
+        if call == "quit":
+            quit()
+        
+        if call.isnumeric():
+            call = int(call)
+            if 2 <= call <= 12:
+                break
+        
+        print("Input a number between 2-12")
+    
+    if call == duplicate:
+        print("Correct!!!")
+        print()
+        skill()
+    else:
+        print("Incorrect.") 
+        print(f"The duplicate is not {call}.")
+
+
+
+
+
+
+def skill() -> None:
+    global skill_id
+    match skill_id:
+        case 0: # RACK
+            print("Skill: RACK II")
+            print("Discards the top 2 cards of the deck.")
+            print()
+            time.sleep(1.5)
+            for _ in range(2):
+                print("Racking...")    
+                hit_card = in_deck.pop(random.randint(0, len(in_deck) - 1))
+                shown_on_display.append(hit_card)
+                time.sleep(1.5)
+                print(f"Racked a {hit_card}!")
+
+        case 1: # Return
+            print("Skill: RETURN")
+            print("Returns your last drawn card into the deck.")
+            print()
+            time.sleep(1.5)
+
+            card = your_hand.pop(-1)
+            in_deck.append(card)
+            in_deck.sort()
+            shown_on_display.remove(card)
+            
+
+            old_hand_value = your_hand_value # Because this doesn't update until it passes this function
+            new_hand_value = 0
+            for i in your_hand:
+                new_hand_value += i
+
+            print(f"Returned {card} from your hand.")
+            print(f"Your hand value: {old_hand_value} -> {new_hand_value}")
+            time.sleep(1)
+        
+        case 2: # Spin
+            print("Skill: SPIN")
+            print("Returns your opponent's last drawn card into the deck.")
+            print()
+            time.sleep(1.5)
+
+            if len(opps_hand) == 1:
+                print("You may not spin your opponent's face down card.")
+                return
+
+
+            card = opps_hand.pop(-1)
+            in_deck.append(card)
+            in_deck.sort()
+            shown_on_display.remove(card)
+            
+
+            old_hand_value = opps_hand_value - opps_hand[0]
+            new_hand_value = 0
+            for i in opps_hand:
+                new_hand_value += i
+
+            new_hand_value -= opps_hand[0]
+
+            print(f"Returned {card} from your opponent's hand.")
+            print(f"Opponent's hand value: {old_hand_value} + ?? -> {new_hand_value} + ??")
+            time.sleep(1)
+
+        case 3: # Clone
+            print("Skill: CLONE")
+            print("Clone your last drawn card.")
+            print()
+            time.sleep(1.5)
+
+            card = your_hand[-1]
+            your_hand.append(card)
+            print(f"Cloned a {card} in your hand.")
+
+            time.sleep(1)
+
+
+
 
 
 def calculate_results() -> None:
