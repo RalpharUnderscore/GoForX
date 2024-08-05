@@ -84,11 +84,11 @@ def init_game(_skill_id: int) -> None:
     your_bound = random.randint(26, 35)
     opps_bound = your_bound + random.randint(-variance, variance)
 
-    hit(True, False)
-    hit(False, False)
+    hit(True, False, False)
+    hit(False, True, False)
 
-    hit(True, False)
-    hit(False, False)
+    hit(True, False, False)
+    hit(False, False, False)
 
 
     # Gameloop, if turn returns false (game ended), break
@@ -161,37 +161,23 @@ def opps_decide() -> bool: # Returns true if opps hits
         stand(False)
         return False
 
-    time.sleep(random.uniform(0.3, 2))
+    time.sleep(random.uniform(0.6, 3))
 
     # Get the sum of cards in the deck
     total_deck_value: int = 0
     for item in in_deck:
         total_deck_value += item
-
-
-    # AI does not know duplicate
-    total_deck_value -= duplicate
     
-    average_deck_value: float = total_deck_value/(len(in_deck) - 1)
-
-
-
-    opps_dist_to_your_bound = your_bound - opps_hand_value
-    if your_bound > opps_bound:
-        opps_dist_to_opps_bound = opps_dist_to_your_bound - variance/2.0
-    elif your_bound < opps_bound:
-        opps_dist_to_opps_bound = opps_dist_to_your_bound + variance/2.0
-    else: # AI has advantage when bounds are the same
-        opps_dist_to_opps_bound = opps_dist_to_your_bound
+    # // Subtract first card in your hand from the data since the AI doesn't know it
+    # Add your first card, because the AI has to assume your card is in the deck.
+    total_deck_value += your_hand[0]
+    average_deck_value: float = total_deck_value/(len(in_deck) + 1)
 
     # If the average deck value is less than distance, hit
-    # Use the player's bound because AI doesn't know its bound.
-    print("\n==========================\n")
-    print(f"Average Deck Value: {average_deck_value}")
-    print(f"Est. Distance: {opps_dist_to_opps_bound}")
-    print("\n==========================\n")
-    if average_deck_value < opps_dist_to_opps_bound: 
-        print(f"Drew a {hit(False)}!")
+    # Use the player's bound because AI doesn't know its bound. It also does not care
+    # if its bound is higher or lower
+    if average_deck_value < your_bound - opps_hand_value: 
+        hit(False)
         return True
     else:
         stand(False)
@@ -255,18 +241,13 @@ def print_display() -> None:
     print(show_if_bound_higher())
     print()
 
-    if your_hand_value < 10: # For formatting
-        print(f"{your_hand_value} /?? | Your Hand      : {your_hand}")
-    else:
-        print(f"{your_hand_value}/?? | Your Hand      : {your_hand}")
+    print(f"{your_hand_value}/?? | Your Hand      : {your_hand}")
 
-    
-    
-    if opps_hand_value < 10: 
-        print(f"{opps_hand_value} /{opps_bound} | Opponent's Hand: {opps_hand}")
-    else:
-        print(f"{opps_hand_value}/{opps_bound} | Opponent's Hand: {opps_hand}")
 
+    # The first card for opps is hidden, when displaying total take their hand value and subtract by the first number
+    display_opps_hand = ["??"] + opps_hand[1:len(opps_hand)]
+    # print(["??"].extend(opps_hand[0:len(opps_hand)-1]))
+    print(f"{opps_hand_value - opps_hand[0]}+??/{opps_bound} | Opponent's Hand: {display_opps_hand}")
 
 
     print()
@@ -298,23 +279,11 @@ def show_if_bound_higher() -> str:
 # If is_you is true, hits the player, otherwise hits opponent
 # If sneak is true, the number will not be added to shown_on_display (used for opps first card, which is not visible)
 # Returns the card drawn
-def hit(is_you: bool, display_message: bool = True, draw_card: int = 0) -> int:
+def hit(is_you: bool, sneak: bool = False, display_message: bool = True) -> int:
     if len(in_deck) == 0: 
         print("No more cards left in the deck.")
         return
-    
-    
-    if draw_card == 0: # Draw card defaults to 0, which means random card
-        hit_card = in_deck.pop(random.randint(0, len(in_deck) - 1))
-    else: # Otherwise, tries to draw a specific card from the deck
-        if draw_card in in_deck:
-            hit_card = in_deck.pop(in_deck.index(draw_card))
-        else:
-            print(f"The {draw_card} card is not in the deck. Drawing from topdeck instead...")
-            hit_card = in_deck.pop(random.randint(0, len(in_deck) - 1))
-
-
-
+    hit_card = in_deck.pop(random.randint(0, len(in_deck) - 1))
     if is_you:
         your_hand.append(hit_card)
         
@@ -323,11 +292,12 @@ def hit(is_you: bool, display_message: bool = True, draw_card: int = 0) -> int:
             time.sleep(1)
     else:
         opps_hand.append(hit_card)
-        if display_message: 
-            print("Opponent Hits!")
-            time.sleep(1)
+        if display_message: print("Opponent Hits!")
     
-    shown_on_display.append(hit_card)
+    if not sneak:
+        shown_on_display.append(hit_card)
+    
+
 
     return hit_card
 
@@ -368,7 +338,7 @@ def skill() -> None:
     global skill_id
     match skill_id:
         case 0: # RACK
-            print("Skill: RACK")
+            print("Skill: RACK II")
             print("Discards the top 2 cards of the deck.")
             print()
             time.sleep(1.5)
@@ -434,38 +404,11 @@ def skill() -> None:
             print()
             time.sleep(1.5)
 
-
             card = your_hand[-1]
             your_hand.append(card)
             print(f"Cloned a {card} in your hand.")
 
             time.sleep(1)
-        
-        case 4:
-            print("Skill: LUCKY DRAW")
-            print("Draw the duplicate if it is in the deck, otherwise draw the top card of the deck.")
-            print()
-            time.sleep(1.5)
-
-            print(f"You drew a {hit(True, False, duplicate)}!")
-            time.sleep(1)
-            
-        case 5:
-            print("Skill: MINUS TWO")
-            print("Draw a \"-2\" card.")
-            print()
-            time.sleep(1.5)
-
-            print("You drew a -2!")
-            your_hand.append(-2)
-            time.sleep(1)
-
-
-            
-
-
-
-
 
 
 
@@ -481,6 +424,7 @@ def calculate_results() -> None:
     print("\n==========================\n")
 
     print(f"Duplicate Card: {duplicate}")
+    print(f"Opponent's Hidden Card: {opps_hand[0]}")
 
     print("\n")
 
@@ -520,9 +464,7 @@ def calculate_results() -> None:
     else:
         print("Opponent Wins...")
     
-    if input(">").lower() == "quit":
-        quit()
-    
+    input(">")
     return
 
 

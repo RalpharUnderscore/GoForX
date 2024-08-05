@@ -17,19 +17,14 @@ GoForX is similar to Blackjack with a couple of changes.
     For example if your opponent's bound is 24, your bound is lower and VARIANCE is 3:
     Your bound could be anywhere from 21-24.
 
-
 3. The Deck consists of 11 cards + 1 duplicate
-    Totalling to 12.
+    Totaling to 12.
     11 of them are numbered 2 to 12. This stays the same every game.
     The duplicate is randomized every game, it is a copy of one of those 11 cards.
 
-
-4. You cannot see your opponent's first card
-	and neither can they see yours.
-
-5. You must call the duplicate to use your skill
-    GoForX has multiple skills to choose from, however you can only carry 1 to a game.
-	To use your skill, type "skill" during a game, you will be asked to name the duplicate card.
+4. You must call the duplicate to use your skill
+    Change your skill in the main menu by typing "skill"
+	Type "skill" during a game to use your skill, you will be asked to name the duplicate card.
 	If you guess correctly, you get to use your skill.
 	If not, you pass your turn.
 	You can only type "skill" once per game regardless of if you guessed correctly.

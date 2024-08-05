@@ -23,7 +23,6 @@ def main() -> None:
     player_response = input(">").lower()
     match player_response:
         case "play":
-            print(skill_id)
             Game.init_game(skill_id)
 
         case "skill":
@@ -31,11 +30,6 @@ def main() -> None:
 
         case "help":
             f = open("goforx.help", "r")
-            print(f.read())
-            f.close()
-
-        case "manual":
-            f = open("goforx.manual", "r")
             print(f.read())
             f.close()
 
@@ -62,7 +56,6 @@ def display_title() -> None:
     print("\'play\': Play a Round")
     print("\'skill\': Change your skill")
     print("\'help\': Displays the GoForX how-to-play")
-    print("\'manual\': Displays the long-winded GoForX manual")
     print("\'quit\': Quit the Game")
 
 

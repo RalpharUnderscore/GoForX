@@ -22,7 +22,7 @@ Draw the duplicate if it is in the deck, otherwise draw the top card of the deck
 Draw a "-2" card.
 
 6. Bounty
-Removes the highest value card of both players' hand (excluding the first card)
+Removes the single highest value card in both players' hands.
 
 7. Up Two
 Increase both player's bounds by 2.
