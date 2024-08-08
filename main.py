@@ -1,15 +1,17 @@
 import game as Game
+import os
+# from rich import print
 
 
 skill_id: int = 0
 sklist: dict = {
-    0: "RACK II",
+    0: "RACK",
     1: "RETURN",
     2: "SPIN",
     3: "CLONE",
     4: "LUCKY DRAW",
-    5: "MINUS TWO",
-    6: "CLAMP",
+    5: "MINUS THREE",
+    6: "BOUNTY",
     7: "UP TWO",
     8: "SAVANT",
     9: "DESPERADO",
@@ -95,7 +97,7 @@ def change_skill() -> None:
     print()
     print(f"Skill equipped: {sklist[id]}")
     print()
-    print("Type \'skill\' in game to use your skill.")
+    print("[bold magenta]Type \'skill\' in game to use your skill.")
     print("You will be prompted to guess the currnet game's duplicate card.")
     print("Guess correctly and you can use your skill.")
     print("You can only use your skill once per game")
@@ -105,5 +107,13 @@ def change_skill() -> None:
 
 
 if __name__ == "__main__":
+    if not os.path.exists("goforx.help"): 
+        print("goforx.help does not exist.")
+        print("\'help\' command will break the game")
+    
+
+
+
+
     while True:
         main()

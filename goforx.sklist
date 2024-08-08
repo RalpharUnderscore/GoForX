@@ -18,8 +18,8 @@ Clone your last drawn card.
 4: Lucky Draw
 Draw the duplicate if it is in the deck, otherwise draw the top card of the deck.
 
-5. Minus Two
-Draw a "-2" card.
+5. Minus Three
+Draw a "-3" card.
 
 6. Bounty
 Removes the single highest value card in both players' hands.
@@ -31,5 +31,6 @@ Increase both player's bounds by 2.
 Reveals your bound, you may only draw 1 other card.
 
 9. Desperado
-Force your opponent to draw the lowest card in the deck, you may not draw anymore cards.
+Double the value of the next card your opponent draws. You may not draw anymore cards.
+
 

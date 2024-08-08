@@ -31,8 +31,15 @@ your_hand_value: int
 opps_hand_value: int
 
 # Set Bound
+show_your_bound: bool = False # SAVANT Skill
 your_bound: int = 24
 opps_bound: int = 24
+
+
+# Draw Limit (defaults at -1: no limit. Some skills limit your draw)
+draw_limit: int = -1
+status_desperado: bool = False
+
 
 
 
@@ -51,8 +58,13 @@ def init_game(_skill_id: int) -> None:
     global your_hand
     global opps_hand
 
+    global show_your_bound
     global your_bound
     global opps_bound
+
+    global draw_limit
+
+    global status_desperado
 
     game_id = random.randint(1, 1000)
 
@@ -81,6 +93,7 @@ def init_game(_skill_id: int) -> None:
 
 
     # Set Bound
+    show_your_bound = False
     your_bound = random.randint(26, 35)
     opps_bound = your_bound + random.randint(-variance, variance)
 
@@ -90,6 +103,9 @@ def init_game(_skill_id: int) -> None:
     hit(True, False)
     hit(False, False)
 
+    # Status
+    draw_limit = -1
+    status_desperado = False
 
     # Gameloop, if turn returns false (game ended), break
     while True:
@@ -104,6 +120,8 @@ def turn() -> bool:
     global opps_hand_value
     
     global used_skill
+
+    global draw_limit
 
     # Player's Turn
     your_hand_value = 0
@@ -120,10 +138,16 @@ def turn() -> bool:
     player_input = input(">").lower()
     match player_input:
         case "hit":
-            print("\n==========================\n")
-            print(f"You drew {hit(True)}!")
-            print("\n==========================\n")
+            if draw_limit != 0:
+                if draw_limit > 0: draw_limit -= 1
 
+
+                print("\n==========================\n")
+                print(f"You drew {hit(True)}!")
+                print("\n==========================\n")
+            else:
+                print("You may not draw anymore cards.")
+                return True
         case "stand":
             player_stand = True
             print("")
@@ -174,6 +198,9 @@ def opps_decide() -> bool: # Returns true if opps hits
     
     average_deck_value: float = total_deck_value/(len(in_deck) - 1)
 
+    global status_desperado
+    if status_desperado: 
+        average_deck_value *= 2
 
 
     opps_dist_to_your_bound = your_bound - opps_hand_value
@@ -186,12 +213,18 @@ def opps_decide() -> bool: # Returns true if opps hits
 
     # If the average deck value is less than distance, hit
     # Use the player's bound because AI doesn't know its bound.
-    print("\n==========================\n")
-    print(f"Average Deck Value: {average_deck_value}")
-    print(f"Est. Distance: {opps_dist_to_opps_bound}")
-    print("\n==========================\n")
+    # print("\n==========================\n")
+    # print(f"Average Deck Value: {average_deck_value}")
+    # print(f"Est. Distance: {opps_dist_to_opps_bound}")
+    # print("\n==========================\n")
     if average_deck_value < opps_dist_to_opps_bound: 
         print(f"Drew a {hit(False)}!")
+        if status_desperado:
+            print("x2 - Desperado Effect")
+            opps_hand[-1] *= 2
+            status_desperado = False
+            print(f"Drew a {opps_hand[-1]}!")
+        
         return True
     else:
         stand(False)
@@ -255,10 +288,13 @@ def print_display() -> None:
     print(show_if_bound_higher())
     print()
 
+
+    your_bound_display = your_bound if show_your_bound else "??" 
+
     if your_hand_value < 10: # For formatting
-        print(f"{your_hand_value} /?? | Your Hand      : {your_hand}")
+        print(f"{your_hand_value} /{your_bound_display} | Your Hand      : {your_hand}")
     else:
-        print(f"{your_hand_value}/?? | Your Hand      : {your_hand}")
+        print(f"{your_hand_value}/{your_bound_display} | Your Hand      : {your_hand}")
 
     
     
@@ -299,6 +335,7 @@ def show_if_bound_higher() -> str:
 # If sneak is true, the number will not be added to shown_on_display (used for opps first card, which is not visible)
 # Returns the card drawn
 def hit(is_you: bool, display_message: bool = True, draw_card: int = 0) -> int:
+    global status_desperado
     if len(in_deck) == 0: 
         print("No more cards left in the deck.")
         return
@@ -323,6 +360,7 @@ def hit(is_you: bool, display_message: bool = True, draw_card: int = 0) -> int:
             time.sleep(1)
     else:
         opps_hand.append(hit_card)
+
         if display_message: 
             print("Opponent Hits!")
             time.sleep(1)
@@ -367,7 +405,7 @@ def guess_duplicate():
 def skill() -> None:
     global skill_id
     match skill_id:
-        case 0: # RACK
+        case 0:
             print("Skill: RACK")
             print("Discards the top 2 cards of the deck.")
             print()
@@ -379,7 +417,7 @@ def skill() -> None:
                 time.sleep(1.5)
                 print(f"Racked a {hit_card}!")
 
-        case 1: # Return
+        case 1:
             print("Skill: RETURN")
             print("Returns your last drawn card into the deck.")
             print()
@@ -400,7 +438,7 @@ def skill() -> None:
             print(f"Your hand value: {old_hand_value} -> {new_hand_value}")
             time.sleep(1)
         
-        case 2: # Spin
+        case 2:
             print("Skill: SPIN")
             print("Returns your opponent's last drawn card into the deck.")
             print()
@@ -428,7 +466,7 @@ def skill() -> None:
             print(f"Opponent's hand value: {old_hand_value} + ?? -> {new_hand_value} + ??")
             time.sleep(1)
 
-        case 3: # Clone
+        case 3:
             print("Skill: CLONE")
             print("Clone your last drawn card.")
             print()
@@ -451,14 +489,114 @@ def skill() -> None:
             time.sleep(1)
             
         case 5:
-            print("Skill: MINUS TWO")
-            print("Draw a \"-2\" card.")
+            print("Skill: MINUS THREE")
+            print("Draw a \"-3\" card.")
             print()
             time.sleep(1.5)
 
-            print("You drew a -2!")
-            your_hand.append(-2)
+            print("You drew a -3!")
+            your_hand.append(-3)
             time.sleep(1)
+        
+        case 6:
+            print("Skill: BOUNTY")
+            print("Removes the single highest value card in both players' hands.")
+            print()
+            time.sleep(1.5)
+
+            your_highest = max(your_hand)
+            opps_highest = max(opps_hand)
+
+            if your_highest >= opps_highest:
+                print(f"Removed a {your_highest} from your hand!")
+                your_hand.remove(your_highest)
+            else:
+                print(f"Removed a {opps_highest} from your opponent's hand!")
+                opps_hand.remove(opps_highest)
+            
+            time.sleep(1)
+
+        case 7:
+            global your_bound
+            global opps_bound
+            print("Skill: UP TWO")
+            print("Increase both player's bounds by 2.")
+            print()
+            time.sleep(1.5)
+
+            print(f"Your Bound: ?? -> ?? + 2")
+            print(f"Opponent's Bound: {opps_bound} -> {opps_bound + 2}")
+
+            your_bound += 2
+            opps_bound += 2
+
+            time.sleep(1)
+
+        case 8:
+            global show_your_bound
+            global draw_limit
+            print("Skill: SAVANT")
+            print("Reveals your bound, you may only draw 1 other card.")
+            print()
+            time.sleep(1.5)
+
+            show_your_bound = True
+            if draw_limit > 1 or draw_limit == -1: draw_limit = 1
+            
+            print(f"Your bound is {your_bound}")
+            print("You may only draw 1 more card this round.")
+            time.sleep(1)
+        
+        # case 9:
+        #     print("Skill: DESPERADO")
+        #     print("Give your lowest card to your opponent, you may not draw anymore cards.")
+        #     print()
+        #     time.sleep(1.5)
+
+        #     lowest_card = min(your_hand)
+        #     card = your_hand.pop(your_hand.index(lowest_card))
+
+        #     opps_hand.append(card)
+
+        #     print(f"Gave opponent your {card} card!")
+        #     print(f"Your hand value: {your_hand_value} -> {your_hand_value - card}")
+        #     print(f"Oppnent's hand value: {opps_hand_value} -> {opps_hand_value + card}")
+        #     print("You may not draw anymore cards this round.")
+        #     draw_limit = 0
+        #     time.sleep(1)
+
+        case 9:
+            global status_desperado
+            # global draw_limit
+            print("Skill: DESPERADO")
+            print("Double the value of the next card your opponent draws. You may not draw anymore cards.")
+            print()
+            time.sleep(1.5)
+
+            print("Desperado is active.")
+            print("You may not draw anymore cards this round.")
+            draw_limit = 0
+            status_desperado = True
+
+            time.sleep(1)
+
+
+        # Unused
+        case 19:
+            print("Skill: DESPERADO")
+            print("Force your opponent to draw a card, you may not draw anymore cards.")
+            print()
+            time.sleep(1.5)
+
+            in_deck.sort()
+            print(f"Forced opponent to draw a {hit(False, True, in_deck[0])}!")
+            print("You may not draw anymore cards this round.")
+            draw_limit = 0
+            time.sleep(1)
+
+
+
+
 
 
             
@@ -513,6 +651,7 @@ def calculate_results() -> None:
     # Tie Breaker and Finding Winner
     if your_distance == opps_distance: 
         you_win = tie_breaker()
+        print("\n==========================\n")
     
 
     if you_win:
@@ -528,9 +667,50 @@ def calculate_results() -> None:
 
 def tie_breaker() -> bool:
     # Both players have the same distance
+    print("Tie Breaker: Cards in Hand")
     if len(your_hand) > len(opps_hand):
+        print("You have more cards than your opponent")
         return True
     elif len(your_hand) < len(opps_hand):
+        print("Your opponent has more cards than you")
         return False
-    else:
-        return True # For now, you win if even the cards tie
+    # else:
+    #     return True # For now, you win if even the cards tie
+
+    print("Same number of cards in both players hands\n")
+    
+    
+    # Both players have the same distance and same number of cards in hard
+    print("Tie Breaker: Highest Value Card")
+    
+    your_hand.sort()
+    opps_hand.sort()
+    
+    print(f"Your highest card: {your_hand[-1]}")
+    print(f"Opponent's highest card: {opps_hand[-1]}")
+
+    if your_hand[-1] > opps_hand[-1]:
+        return True
+    elif your_hand[-1] < opps_hand[-1]:
+        return False
+    
+    print("Both players have the same highest value card\n") # In case both players happen to draw the duplicate, which is the highest value card
+
+
+    # Same distance, same no. cards in hand, same highest value
+    print("Tie Breaker: Second Highest Value Card")
+
+    print(f"Your second highest card: {your_hand[-2]}")
+    print(f"Opponent's second highest card: {opps_hand[-2]}")
+
+
+    if your_hand[-2] > opps_hand[-2]:
+        return True
+    elif your_hand[-2] < opps_hand[-2]:
+        return False
+    
+    print("that isn't supposed to happen. you win i guess") # Should be impossible because 
+    return True
+    
+
+    

@@ -23,8 +23,8 @@ GoForX is similar to Blackjack with a couple of changes.
     The duplicate is randomized every game, it is a copy of one of those 11 cards.
 
 4. You must call the duplicate to use your skill
-    Change your skill in the main menu by typing "skill"
-	Type "skill" during a game to use your skill, you will be asked to name the duplicate card.
-	If you guess correctly, you get to use your skill.
-	If not, you pass your turn.
-	You can only type "skill" once per game regardless of if you guessed correctly.
+    Change your skill in the main menu by typing "skill".
+    Type "skill" during a game to use your skill, you will be asked to name the duplicate card.
+    If you guess correctly, you get to use your skill.
+    If not, you pass your turn.
+    You can only type "skill" once per game regardless of if you guessed correctly.
