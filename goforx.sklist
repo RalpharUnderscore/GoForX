@@ -22,7 +22,7 @@ Draw the duplicate if it is in the deck, otherwise draw the top card of the deck
 The value of your last drawn card becomes inverted.
 
 6. Bounty
-Removes the single highest value card in both players' hands.
+Removes the single highest value card of both players' hands.
 
 7. Up Two
 Increase both player's bounds by 2.

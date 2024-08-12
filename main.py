@@ -84,13 +84,24 @@ def make_sklist_is_valid(savefile) -> int:
 
 
 def change_skill() -> None:
-    f = open("goforx.sklist", "r")
-    print(f.read())
-    f.close()
+    try:
+        f = open("goforx.sklist", "r")
+        print(f.read())
+        f.close()
+    except FileNotFoundError:
+        print("goforx.sklist not found. Please reinstall.")
 
 
     id = int(input("Change skill to (ID): "))
     
+    if id > len(sklist) - 1: # Invalid skill id
+        print(f"Invalid skill id: \'{id}\'")
+        print("Please enter a valid skill id.")
+        return
+        
+
+
+
     savefile = open("savefile.txt", "w")
     savefile.write(str(id))
     savefile.close()
@@ -108,8 +119,18 @@ def change_skill() -> None:
 
 if __name__ == "__main__":
     if not os.path.exists("goforx.help"): 
-        print("goforx.help does not exist.")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("goforx.help does not exist. Please redownload game files.")
         print("\'help\' command will break the game")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+    
+    if not os.path.exists("goforx.sklist"):
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("goforx.sklist does not exist. Please redownload game files.")
+        print("\'skill\' will still allow you to change your skill")
+        print("but will not print skill description")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+
     
 
 
