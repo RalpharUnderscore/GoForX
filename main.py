@@ -10,7 +10,7 @@ sklist: dict = {
     2: "SPIN",
     3: "CLONE",
     4: "LUCKY DRAW",
-    5: "MINUS THREE",
+    5: "INVERT",
     6: "BOUNTY",
     7: "UP TWO",
     8: "SAVANT",
@@ -97,7 +97,7 @@ def change_skill() -> None:
     print()
     print(f"Skill equipped: {sklist[id]}")
     print()
-    print("[bold magenta]Type \'skill\' in game to use your skill.")
+    print("Type \'skill\' in game to use your skill.")
     print("You will be prompted to guess the currnet game's duplicate card.")
     print("Guess correctly and you can use your skill.")
     print("You can only use your skill once per game")

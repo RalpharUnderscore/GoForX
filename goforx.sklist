@@ -18,8 +18,8 @@ Clone your last drawn card.
 4: Lucky Draw
 Draw the duplicate if it is in the deck, otherwise draw the top card of the deck.
 
-5. Minus Three
-Draw a "-3" card.
+5. Invert
+The value of your last drawn card becomes inverted.
 
 6. Bounty
 Removes the single highest value card in both players' hands.

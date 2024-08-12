@@ -40,7 +40,8 @@ opps_bound: int = 24
 draw_limit: int = -1
 status_desperado: bool = False
 
-
+# AI only knows duplicate if one card in deck OR duplicate already drawn
+opps_knows_duplicate: bool = False
 
 
 def init_game(_skill_id: int) -> None:
@@ -65,6 +66,8 @@ def init_game(_skill_id: int) -> None:
     global draw_limit
 
     global status_desperado
+
+    global opps_knows_duplicate
 
     game_id = random.randint(1, 1000)
 
@@ -106,6 +109,8 @@ def init_game(_skill_id: int) -> None:
     # Status
     draw_limit = -1
     status_desperado = False
+
+    opps_knows_duplicate = False
 
     # Gameloop, if turn returns false (game ended), break
     while True:
@@ -181,11 +186,16 @@ def turn() -> bool:
 
 
 def opps_decide() -> bool: # Returns true if opps hits
-    if len(decklist) == 0:
+    global opps_knows_duplicate
+    
+    time.sleep(0.1)
+    
+    if len(in_deck) == 0:
+        opps_knows_duplicate = True
         stand(False)
         return False
 
-    time.sleep(random.uniform(0.3, 2))
+    time.sleep(random.uniform(0.2, 2))
 
     # Get the sum of cards in the deck
     total_deck_value: int = 0
@@ -193,11 +203,18 @@ def opps_decide() -> bool: # Returns true if opps hits
         total_deck_value += item
 
 
-    # AI does not know duplicate
-    total_deck_value -= duplicate
-    
-    average_deck_value: float = total_deck_value/(len(in_deck) - 1)
 
+    # If duplicate revealed or one card left (prevent 0 div err), calculate like normal (AI now knows duplicate)
+    if duplicate not in in_deck or len(in_deck) == 1:
+        opps_knows_duplicate = True
+        average_deck_value: float = total_deck_value/(len(in_deck))
+
+    else: # If duplicate not revealed, remove duplicate from average calculation
+        total_deck_value -= duplicate # don't add duplicate into data
+        average_deck_value: float = total_deck_value/(len(in_deck) - 1)
+
+
+    
     global status_desperado
     if status_desperado: 
         average_deck_value *= 2
@@ -487,16 +504,22 @@ def skill() -> None:
 
             print(f"You drew a {hit(True, False, duplicate)}!")
             time.sleep(1)
-            
+
+
         case 5:
-            print("Skill: MINUS THREE")
-            print("Draw a \"-3\" card.")
+            print("Skill: INVERT")
+            print("The value of your last drawn card becomes inverted.")
             print()
             time.sleep(1.5)
 
-            print("You drew a -3!")
-            your_hand.append(-3)
+            print(f"Inverted Card: {your_hand[-1]} -> {-your_hand[-1]}")
+            print(f"Youu Hand Value: {your_hand_value} -> {your_hand_value - 2*your_hand[-1]}")
+
+            your_hand[-1] *= -1
+
             time.sleep(1)
+
+        
         
         case 6:
             print("Skill: BOUNTY")
@@ -546,24 +569,6 @@ def skill() -> None:
             print(f"Your bound is {your_bound}")
             print("You may only draw 1 more card this round.")
             time.sleep(1)
-        
-        # case 9:
-        #     print("Skill: DESPERADO")
-        #     print("Give your lowest card to your opponent, you may not draw anymore cards.")
-        #     print()
-        #     time.sleep(1.5)
-
-        #     lowest_card = min(your_hand)
-        #     card = your_hand.pop(your_hand.index(lowest_card))
-
-        #     opps_hand.append(card)
-
-        #     print(f"Gave opponent your {card} card!")
-        #     print(f"Your hand value: {your_hand_value} -> {your_hand_value - card}")
-        #     print(f"Oppnent's hand value: {opps_hand_value} -> {opps_hand_value + card}")
-        #     print("You may not draw anymore cards this round.")
-        #     draw_limit = 0
-        #     time.sleep(1)
 
         case 9:
             global status_desperado
@@ -582,6 +587,17 @@ def skill() -> None:
 
 
         # Unused
+
+        case 15:
+            print("Skill: MINUS THREE")
+            print("Draw a \"-3\" card.")
+            print()
+            time.sleep(1.5)
+
+            print("You drew a -3!")
+            your_hand.append(-3)
+            time.sleep(1)
+
         case 19:
             print("Skill: DESPERADO")
             print("Force your opponent to draw a card, you may not draw anymore cards.")
@@ -709,7 +725,7 @@ def tie_breaker() -> bool:
     elif your_hand[-2] < opps_hand[-2]:
         return False
     
-    print("that isn't supposed to happen. you win i guess") # Should be impossible because 
+    print("that isn't supposed to happen. you win i guess") # Should be impossible because there should be only 1 duplicate in the deck.
     return True
     
 
