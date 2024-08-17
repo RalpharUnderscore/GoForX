@@ -50,7 +50,7 @@ def display_title() -> None:
     print("|                     |")
     print("-----------------------")
     savefile = open("savefile.txt", "r")
-    skill_id = make_sklist_is_valid(savefile)
+    skill_id = make_savefile_valid(savefile)
     
 
     print(f"Current skill: {sklist[skill_id]}")
@@ -61,7 +61,7 @@ def display_title() -> None:
     print("\'quit\': Quit the Game")
 
 
-def make_sklist_is_valid(savefile) -> int:
+def make_savefile_valid(savefile) -> int:
     text = savefile.read()
     flag = False
     try:
@@ -114,7 +114,7 @@ def change_skill() -> None:
     print("You can only use your skill once per game")
 
     print()
-    f.close()
+
 
 
 if __name__ == "__main__":
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         print("goforx.help does not exist. Please redownload game files.")
         print("\'help\' command will break the game")
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
-    
+
     if not os.path.exists("goforx.sklist"):
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         print("goforx.sklist does not exist. Please redownload game files.")
@@ -131,9 +131,12 @@ if __name__ == "__main__":
         print("but will not print skill description")
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
 
-    
-
-
+    if not os.path.exists("savefile.txt"):
+        print("No save file found.")
+        print("Created new one.")
+        f = open("savefile.txt", "w")
+        f.write("0")
+        f.close()
 
 
     while True:
